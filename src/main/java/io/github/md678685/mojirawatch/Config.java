@@ -1,67 +1,119 @@
 package io.github.md678685.mojirawatch;
 
-import java.nio.file.Path;
-import java.time.Duration;
+import ninja.leaping.configurate.objectmapping.Setting;
+import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
+import java.nio.file.Path;
+import java.util.List;
+
+@ConfigSerializable
 public class Config {
 
-    private final String projectUrl;
-    private final Path cacheFile;
-    private final Duration interval;
+    @Setting
+    private Jira jira;
+    @Setting
+    private Notifiers notifiers;
 
-    private final String ircHost;
-    private final int ircPort;
-    private final String ircNick;
-    private final String ircAuthUser;
-    private final String ircAuthPassword;
-    private final String ircChannel;
-
-    Config() {
-        projectUrl = System.getProperty("mojirawatch.url", "https://bugs.mojang.com/rest/api/2/project/MC");
-        cacheFile = Path.of(System.getProperty("mojirawatch.cachefile", "./mojiracache.json"));
-        interval = Duration.parse(System.getProperty("mojirawatch.interval", "PT10M"));
-
-        ircHost = System.getProperty("mojirawatch.irc.host", "irc.esper.net");
-        ircPort = Integer.parseInt(System.getProperty("mojirawatch.irc.port", "6697"));
-        ircNick = System.getProperty("mojirawatch.irc.nick", "md6secretbot");
-        ircAuthUser = System.getProperty("mojirawatch.irc.auth.user", ircNick);
-        ircAuthPassword = System.getProperty("mojirawatch.irc.auth.password", "md6secretbot");
-        ircChannel = System.getProperty("mojirawatch.irc.channel", "#mojirawatch");
+    public Jira jira() {
+        return jira;
     }
 
-    public String getProjectUrl() {
-        return projectUrl;
+    public Notifiers notifiers() {
+        return notifiers;
     }
 
-    public Path getCacheFile() {
-        return cacheFile;
+    @ConfigSerializable
+    public static class Jira {
+        @Setting
+        private String url;
+        @Setting("cache-file")
+        private String cacheFile;
+        @Setting
+        private String interval;
+
+        public String url() {
+            return url;
+        }
+
+        public String cacheFile() {
+            return cacheFile;
+        }
+
+        public String interval() {
+            return interval;
+        }
     }
 
-    public Duration getInterval() {
-        return interval;
+    @ConfigSerializable
+    public static class Notifiers {
+        @Setting
+        private List<Irc> irc;
+
+        public List<Irc> irc() {
+            return irc;
+        }
     }
 
-    public String getIrcHost() {
-        return ircHost;
+    @ConfigSerializable
+    public static class Irc {
+        @Setting
+        private String host;
+        @Setting
+        private int port;
+        @Setting
+        private String nick;
+        @Setting
+        private IrcAuth auth;
+        @Setting
+        private List<String> channels;
+
+        public String host() {
+            return host;
+        }
+
+        public int port() {
+            return port;
+        }
+
+        public String nick() {
+            return nick;
+        }
+
+        public IrcAuth auth() {
+            return auth;
+        }
+
+        public List<String> channels() {
+            return channels;
+        }
     }
 
-    public int getIrcPort() {
-        return ircPort;
+    @ConfigSerializable
+    public static class IrcAuth {
+        @Setting
+        private String username;
+        @Setting
+        private String password;
+        @Setting
+        private IrcAuthType type;
+
+        public String username() {
+            return username;
+        }
+
+        public String password() {
+            return password;
+        }
+
+        public IrcAuthType type() {
+            return type;
+        }
     }
 
-    public String getIrcNick() {
-        return ircNick;
+    public enum IrcAuthType {
+        NICKSERV,
+        SASL,
+        NONE
     }
 
-    public String getIrcAuthUser() {
-        return ircAuthUser;
-    }
-
-    public String getIrcAuthPassword() {
-        return ircAuthPassword;
-    }
-
-    public String getIrcChannel() {
-        return ircChannel;
-    }
 }

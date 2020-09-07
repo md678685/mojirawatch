@@ -16,6 +16,6 @@ repositories {
 dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.8.1")
     implementation("com.googlecode.json-simple:json-simple:1.1.1")
-
     implementation("org.kitteh.irc:client-lib:7.3.0")
+    implementation("org.spongepowered:configurate-hocon:3.7.1")
 }
