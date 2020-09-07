@@ -15,6 +15,7 @@ public class IrcNotifier implements Notifier {
 
         this.client = Client.builder()
                 .nick(config.nick())
+                .realName("mojirawatch")
                 .server()
                 .host(config.host())
                 .port(config.port(), Client.Builder.Server.SecurityType.SECURE)
