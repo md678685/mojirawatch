@@ -40,7 +40,7 @@ public class App {
         loadCache();
         setupNotifiers();
 
-        Duration interval = DurationUtil.parseDateDiff(config.jira().interval(), true);
+        Duration interval = DurationUtil.parseTime(config.jira().interval());
         scheduler.scheduleAtFixedRate(this::pollJira, 2000, interval.toMillis(), TimeUnit.MILLISECONDS);
     }
 

@@ -18,8 +18,7 @@
 package io.github.md678685.mojirawatch.util;
 
 import java.time.Duration;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.time.temporal.ChronoUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,7 +28,7 @@ public class DurationUtil {
     private static final Pattern timePattern = Pattern.compile("(?:([0-9]+)\\s*y[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*mo[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*w[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*d[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*h[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*m[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*(?:s[a-z]*)?)?", Pattern.CASE_INSENSITIVE);
     private static final int maxYears = 100000;
 
-    public static Duration parseDateDiff(String time, boolean future) {
+    public static Duration parseTime(String time) {
         Matcher m = timePattern.matcher(time);
         int years = 0;
         int months = 0;
@@ -77,37 +76,15 @@ public class DurationUtil {
         if (!found) {
             throw new RuntimeException("Invalid time format");
         }
-        Calendar c = new GregorianCalendar();
-        if (years > 0) {
-            if (years > maxYears) {
-                years = maxYears;
-            }
-            c.add(Calendar.YEAR, years * (future ? 1 : -1));
-        }
-        if (months > 0) {
-            c.add(Calendar.MONTH, months * (future ? 1 : -1));
-        }
-        if (weeks > 0) {
-            c.add(Calendar.WEEK_OF_YEAR, weeks * (future ? 1 : -1));
-        }
-        if (days > 0) {
-            c.add(Calendar.DAY_OF_MONTH, days * (future ? 1 : -1));
-        }
-        if (hours > 0) {
-            c.add(Calendar.HOUR_OF_DAY, hours * (future ? 1 : -1));
-        }
-        if (minutes > 0) {
-            c.add(Calendar.MINUTE, minutes * (future ? 1 : -1));
-        }
-        if (seconds > 0) {
-            c.add(Calendar.SECOND, seconds * (future ? 1 : -1));
-        }
-        Calendar max = new GregorianCalendar();
-        max.add(Calendar.YEAR, 10);
-        if (c.after(max)) {
-            return Duration.ofMillis(max.getTimeInMillis());
-        }
-        return Duration.ofMillis(c.getTimeInMillis());
+
+        return Duration.ofNanos(0)
+                .plus(ChronoUnit.YEARS.getDuration().multipliedBy(Math.min(years, maxYears))) // shush
+                .plus(ChronoUnit.MONTHS.getDuration().multipliedBy(months)) // shush more
+                .plus(ChronoUnit.WEEKS.getDuration().multipliedBy(weeks)) // also shush
+                .plusDays(days)
+                .plusHours(hours)
+                .plusMinutes(minutes)
+                .plusSeconds(seconds);
     }
 
 }
