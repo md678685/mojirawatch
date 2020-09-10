@@ -15,7 +15,8 @@ public class IrcNotifier implements Notifier {
 
         this.client = Client.builder()
                 .nick(config.nick())
-                .realName("mojirawatch")
+                .user(config.user())
+                .realName(config.realname())
                 .server()
                 .host(config.host())
                 .port(config.port(), Client.Builder.Server.SecurityType.SECURE)
@@ -40,8 +41,14 @@ public class IrcNotifier implements Notifier {
     }
 
     @Override
-    public void notifyNewVersion(String name, String description) {
+    public void notifyJira(String name, String description) {
         String message = String.format("[MOJIRAWATCH] Found new version '%s' with description '%s'!", name, description);
+        this.config.channels().forEach(channel -> client.sendMessage(channel, message));
+    }
+
+    @Override
+    public void notifyLauncherMeta(String name, String type) {
+        String message = String.format("[LAUNCHERWATCH] Found new version '%s' of type '%s'!", name, type);
         this.config.channels().forEach(channel -> client.sendMessage(channel, message));
     }
 }

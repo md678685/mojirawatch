@@ -3,7 +3,6 @@ package io.github.md678685.mojirawatch;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
-import java.nio.file.Path;
 import java.util.List;
 
 @ConfigSerializable
@@ -11,11 +10,17 @@ public class Config {
 
     @Setting
     private Jira jira;
+    @Setting("launcher-meta")
+    private LauncherMeta launcherMeta;
     @Setting
     private Notifiers notifiers;
 
     public Jira jira() {
         return jira;
+    }
+
+    public LauncherMeta launcherMeta() {
+        return launcherMeta;
     }
 
     public Notifiers notifiers() {
@@ -24,6 +29,28 @@ public class Config {
 
     @ConfigSerializable
     public static class Jira {
+        @Setting
+        private String url;
+        @Setting("cache-file")
+        private String cacheFile;
+        @Setting
+        private String interval;
+
+        public String url() {
+            return url;
+        }
+
+        public String cacheFile() {
+            return cacheFile;
+        }
+
+        public String interval() {
+            return interval;
+        }
+    }
+
+    @ConfigSerializable
+    public static class LauncherMeta {
         @Setting
         private String url;
         @Setting("cache-file")
@@ -61,6 +88,10 @@ public class Config {
         @Setting
         private int port;
         @Setting
+        private String user;
+        @Setting
+        private String realname;
+        @Setting
         private String nick;
         @Setting
         private IrcAuth auth;
@@ -73,6 +104,14 @@ public class Config {
 
         public int port() {
             return port;
+        }
+
+        public String user() {
+            return user;
+        }
+
+        public String realname() {
+            return realname;
         }
 
         public String nick() {
