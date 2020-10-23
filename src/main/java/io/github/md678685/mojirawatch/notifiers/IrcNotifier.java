@@ -1,11 +1,17 @@
 package io.github.md678685.mojirawatch.notifiers;
 
 import io.github.md678685.mojirawatch.Config;
+import net.engio.mbassy.listener.Handler;
 import org.kitteh.irc.client.library.Client;
+import org.kitteh.irc.client.library.event.connection.ClientConnectionEstablishedEvent;
 import org.kitteh.irc.client.library.feature.auth.NickServ;
 import org.kitteh.irc.client.library.feature.auth.SaslPlain;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class IrcNotifier implements Notifier {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(IrcNotifier.class);
 
     private final Client client;
     private final Config.Irc config;
@@ -36,8 +42,9 @@ public class IrcNotifier implements Notifier {
             default:
                 break;
         }
+        this.client.getEventManager().registerEventListener(this);
         this.client.connect();
-        this.config.channels().forEach(client::addChannel);
+        this.joinAllChannels();
     }
 
     @Override
@@ -51,4 +58,15 @@ public class IrcNotifier implements Notifier {
         String message = String.format("[LAUNCHERWATCH] Found new version '%s' of type '%s'!", name, type);
         this.config.channels().forEach(channel -> client.sendMessage(channel, message));
     }
+
+    @Handler
+    public void onConnect(ClientConnectionEstablishedEvent event) {
+        LOGGER.info(String.format("Connection to IRC established [%s:%d]", this.config.host(), this.config.port()));
+        this.joinAllChannels();
+    }
+
+    private void joinAllChannels() {
+        this.config.channels().forEach(client::addChannel);
+    }
+
 }

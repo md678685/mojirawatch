@@ -2,6 +2,7 @@ package io.github.md678685.mojirawatch.tasks;
 
 import io.github.md678685.mojirawatch.Config;
 import io.github.md678685.mojirawatch.notifiers.Notifier;
+import io.github.md678685.mojirawatch.notifiers.SysoutNotifier;
 import io.github.md678685.mojirawatch.util.DurationUtil;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -10,6 +11,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -23,6 +26,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class LauncherMetaTask implements Task {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(LauncherMetaTask.class);
 
     private final Config.LauncherMeta config;
     private final ScheduledExecutorService scheduler;
@@ -85,7 +90,7 @@ public class LauncherMetaTask implements Task {
 
         try (Response response = client.newCall(request).execute()) {
             JSONArray versions = (JSONArray) ((JSONObject) parser.parse(response.body().charStream())).get("versions");
-            System.out.println("Fetched " + versions.size() + " versions from LauncherMeta");
+            LOGGER.info("Fetched " + versions.size() + " versions from LauncherMeta");
             versions.stream().filter(entry -> {
                 String id = (String) ((JSONObject) entry).get("id");
                 return !knownVersions.contains(id);

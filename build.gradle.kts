@@ -18,4 +18,6 @@ dependencies {
     implementation("com.googlecode.json-simple:json-simple:1.1.1")
     implementation("org.kitteh.irc:client-lib:7.3.0")
     implementation("org.spongepowered:configurate-hocon:3.7.1")
+    implementation("org.slf4j:slf4j-api:1.7.30")
+    runtimeOnly("org.slf4j:slf4j-simple:1.7.30")
 }
