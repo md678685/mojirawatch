@@ -3,6 +3,8 @@ package io.github.md678685.mojirawatch.notifiers;
 import io.github.md678685.mojirawatch.Config;
 import net.engio.mbassy.listener.Handler;
 import org.kitteh.irc.client.library.Client;
+import org.kitteh.irc.client.library.event.client.ClientNegotiationCompleteEvent;
+import org.kitteh.irc.client.library.event.connection.ClientConnectionClosedEvent;
 import org.kitteh.irc.client.library.event.connection.ClientConnectionEstablishedEvent;
 import org.kitteh.irc.client.library.feature.auth.NickServ;
 import org.kitteh.irc.client.library.feature.auth.SaslPlain;
@@ -60,9 +62,17 @@ public class IrcNotifier implements Notifier {
     }
 
     @Handler
-    public void onConnect(ClientConnectionEstablishedEvent event) {
+    public void onConnect(ClientNegotiationCompleteEvent event) {
         LOGGER.info(String.format("Connection to IRC established [%s:%d]", this.config.host(), this.config.port()));
         this.joinAllChannels();
+    }
+
+    @Handler
+    public void onDisconnect(ClientConnectionClosedEvent event) {
+        LOGGER.info(String.format(
+                "Connection to IRC dropped; reconnecting... [%s:%d]",
+                this.config.host(),
+                this.config.port()));
     }
 
     private void joinAllChannels() {
